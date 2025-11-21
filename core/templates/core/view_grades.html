@@ -1,47 +1,57 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>View Student Grades</h1>
+{% extends 'base.html' %}
+{% block title %}View Grades{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">View Student Grades</h1>
 
     <form method="post" action="{% url 'core:view_grades' %}">
         {% csrf_token %}
-        <label for="course">Select Course:</label>
-        
-        <select name="course_id" id="course" required>
-            <option value="">-- Select a Course --</option>
-            {% for course in courses %}
-                <option value="{{ course.pk }}">{{ course.course_code }} - {{ course.name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">View Grades</button>
+        <h2 class="h5">Select Course to View Grades</h2>
+        <div class="input-group mb-4">
+            <select name="course_id" id="course" class="form-select" required>
+                <option value="">-- Select a Course --</option>
+                {% for course in courses %}
+                    <option value="{{ course.pk }}">{{ course.course_code }} - {{ course.name }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-primary" type="submit">View Grades</button>
+        </div>
     </form>
 
     {% if student_data %}
         <hr>
-        <h2>Results for {{ selected_course.name }} ({{ selected_course.course_code }})</h2>
-        <table border="1" cellpadding="10" cellspacing="0">
-            <thead>
+        <h2 class="h5 mt-4">Results for {{ selected_course.name }} ({{ selected_course.course_code }})</h2>
+        
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
                 <tr>
                     <th>Student Name</th>
                     <th>Index Number</th>
                     <th>Attendance Score</th>
-                </tr>
+                    <th>Status</th> </tr>
             </thead>
             <tbody>
                 {% for data in student_data %}
                 <tr>
                     <td>{{ data.full_name }}</td>
                     <td>{{ data.index_number }}</td>
-                    <td>{{ data.attendance_score }}</td>
+                    <td><span class="badge text-bg-info">{{ data.attendance_score }}</span></td>
+                    <td>
+                        {% if data.warning %}
+                            <span class="badge text-bg-danger">{{ data.warning }}</span>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
+        <div class="mt-4 text-center">
+            <button class="btn btn-secondary" onclick="window.print()">Print Attendance Report</button>
+        </div>
     {% endif %}
     
-    <p><a href="{% url 'core:index' %}">Back to Dashboard</a></p>
-</body>
-</html>
+    <p class="mt-4"><a href="{% url 'core:index' %}">← Back to Dashboard</a></p>
+{% endblock content %}

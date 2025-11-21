@@ -1,48 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>Record Attendance</h1>
+{% extends 'base.html' %}
+{% block title %}Record Attendance{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Record Attendance</h1>
 
     {% if error_message %}
-        <p style="color: red;">{{ error_message }}</p>
+        <div class="alert alert-danger" role="alert">
+            {{ error_message }}
+        </div>
     {% endif %}
 
     <form method="get" action="{% url 'core:record_attendance' %}">
-        <h2>1. Select Course</h2>
-        <label for="course">Select Course:</label>
-        <select name="course_id" id="course" required>
-            <option value="">-- Select a Course to Mark --</option>
-            {% for course in courses %}
-                <option value="{{ course.pk }}" {% if selected_course and selected_course.pk == course.pk %}selected{% endif %}>
-                    {{ course.course_code }} - {{ course.name }}
-                </option>
-            {% endfor %}
-        </select>
-        <button type="submit">Load Students</button>
+        <h2 class="h5">1. Select Course</h2>
+        <div class="input-group mb-3">
+            <select name="course_id" id="course" class="form-select" required>
+                <option value="">-- Select a Course to Mark --</option>
+                {% for course in courses %}
+                    <option value="{{ course.pk }}" {% if selected_course and selected_course.pk == course.pk %}selected{% endif %}>
+                        {{ course.course_code }} - {{ course.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-primary" type="submit">Load Students</button>
+        </div>
     </form>
     
     <hr>
     
     {% if students %}
-        <h2>2. Mark Attendance for {{ selected_course.course_code }}</h2>
+        <h2 class="h5">2. Mark Attendance for {{ selected_course.course_code }}</h2>
         
         <form method="post" action="{% url 'core:record_attendance' %}">
             {% csrf_token %}
+            
             <input type="hidden" name="course_id" value="{{ selected_course.pk }}">
             
-            <label for="session_key">Session Key (e.g., Week 1):</label>
-            <input type="text" name="session_key" required>
-            <br><br>
+            <div class="mb-3">
+                <label for="session_key" class="form-label">Session Key (e.g., Week 1):</label>
+                <input type="text" name="session_key" id="session_key" class="form-control" required>
+            </div>
 
-            <table border="1" cellpadding="5">
+            <table class="table table-striped table-sm mb-4">
                 <thead>
                     <tr>
                         <th>Index Number</th>
                         <th>Student Name</th>
-                        <th>Mark Present</th>
+                        <th style="width: 1%;">Present</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,20 +54,19 @@
                         <td>{{ student.index_number }}</td>
                         <td>{{ student.full_name }}</td>
                         <td>
-                            <input type="checkbox" name="present_students" value="{{ student.index_number }}" checked>
+                            <input type="checkbox" name="present_students" value="{{ student.index_number }}" class="form-check-input" checked>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             
-            <br>
-            <button type="submit">Submit Attendance</button>
+            <button type="submit" class="btn btn-success">Submit Attendance</button>
         </form>
+        
     {% elif selected_course %}
-        <p>No students enrolled in {{ selected_course.course_code }}.</p>
+        <div class="alert alert-warning">No students enrolled in {{ selected_course.course_code }}.</div>
     {% endif %}
 
-    <p><a href="{% url 'core:index' %}">Back to Dashboard</a></p>
-</body>
-</html>
+    <p class="mt-4"><a href="{% url 'core:index' %}">← Back to Dashboard</a></p>
+{% endblock content %}

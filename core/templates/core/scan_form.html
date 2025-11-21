@@ -1,40 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>Attendance Check-in ({{ course_code }})</h1>
-    <p>Session expires at: {{ expires_at|time:"H:i:s" }}</p>
+{% extends 'base.html' %}
+{% block title %}Record Attendance{% endblock %}
 
-    <form method="post" action="{% url 'core:scan_attendance' key=session_key %}">
-        {% csrf_token %}
-        
-        <h2>Enter Your Details</h2>
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="mb-3">Attendance Check-in ({{ course_code }})</h1>
+            <div class="alert alert-info">
+                Session expires at: <strong>{{ expires_at|time:"H:i:s" }}</strong>
+            </div>
 
-        <label for="full_name">Full Name (As registered):</label>
-        <input type="text" name="full_name" id="full_name" required>
-        <br><br>
+            <form method="post" action="{% url 'core:scan_attendance' key=session_key %}" class="card p-4">
+                {% csrf_token %}
+                
+                <h2 class="h5">Enter Your Details</h2>
 
-        <label for="index_number">Index Number:</label>
-        <input type="text" name="index_number" id="index_number" required>
-        <br><br>
-        
-        <input type="hidden" name="latitude" id="latitude">
-        <input type="hidden" name="longitude" id="longitude">
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">Full Name (As registered):</label>
+                    <input type="text" name="full_name" id="full_name" class="form-control" required>
+                </div>
 
-        <button type="submit" id="submit_btn">Mark Me Present</button>
-    </form>
+                <div class="mb-3">
+                    <label for="index_number" class="form-label">Index Number:</label>
+                    <input type="text" name="index_number" id="index_number" class="form-control" required>
+                </div>
+                
+                <input type="hidden" name="latitude" id="latitude" required>
+                <input type="hidden" name="longitude" id="longitude" required>
+
+                <button type="submit" id="submit_btn" class="btn btn-success mt-3" disabled>
+                    Getting Location...
+                </button>
+            </form>
+        </div>
+    </div>
     
+    {% block extra_js %}
     <script>
         // --- GEOLOCATION JAVASCRIPT ---
         const submitBtn = document.getElementById('submit_btn');
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
-
-        // Disable button until location is retrieved
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Getting Location...';
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -46,20 +51,20 @@
                     submitBtn.textContent = 'Mark Me Present';
                 },
                 function(error) {
-                    // Failure: Use null/0 and allow submission, but log the issue
+                    // Failure: Use null/0 and allow submission, but inform the student
                     console.error("Geolocation failed:", error);
                     latitudeInput.value = 0;
                     longitudeInput.value = 0;
                     submitBtn.disabled = false;
+                    submitBtn.classList.add('btn-warning');
                     submitBtn.textContent = 'Mark Me Present (Location Not Found)';
                 }
             );
         } else {
             // Browser does not support Geolocation
-            alert("Geolocation is not supported by your browser. Submission allowed without location.");
             submitBtn.disabled = false;
             submitBtn.textContent = 'Mark Me Present';
         }
     </script>
-</body>
-</html>
+    {% endblock extra_js %}
+{% endblock content %}

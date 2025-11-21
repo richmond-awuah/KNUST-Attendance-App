@@ -1,21 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>Attendance Session Active</h1>
-    
-    <p>Session Key: <strong>{{ session_key }}</strong></p>
-    <p>Course: {{ course.name }} ({{ course.course_code }})</p>
-    <p style="color: red;">Attendance closes at: <strong>{{ expires_at|time:"H:i:s" }}</strong></p>
-    <p>Required Location: {{ location }} (Students outside a 50m radius will be flagged)</p>
+{% extends 'base.html' %}
+{% block title %}Session Active{% endblock %}
 
-    <hr>
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="mb-4">Attendance Session Active</h1>
+            
+            <div class="alert alert-primary mb-4">
+                <h5 class="alert-heading">Course: {{ course.name }} ({{ course.course_code }})</h5>
+                <p>Session Key: <strong>{{ session_key }}</strong></p>
+                <p class="text-danger">Attendance closes at: <strong>{{ expires_at|time:"H:i:s" }}</strong></p>
+            </div>
 
-    <h2>Student Scan Code:</h2>
-    <img src="data:image/png;base64,{{ qr_image }}" alt="Attendance QR Code">
-    
-    <p><a href="{% url 'core:index' %}">Back to Dashboard</a></p>
-</body>
-</html>
+            <h2 class="h4 mt-5">Student Scan Code:</h2>
+            <p class="text-muted">Students must scan this code and be within 50m of the required location.</p>
+            
+            <img src="data:image/png;base64,{{ qr_image }}" alt="Attendance QR Code" class="img-fluid border p-2" style="max-width: 300px;">
+            
+            <div class="mt-4">
+                <p class="h6">Required Location (Hardcoded Example):</p>
+                <p>{{ location }}</p>
+            </div>
+
+            <hr>
+            <p><a href="{% url 'core:index' %}" class="btn btn-secondary">← Back to Dashboard</a></p>
+        </div>
+    </div>
+{% endblock content %}
