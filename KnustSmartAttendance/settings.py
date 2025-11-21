@@ -3,7 +3,8 @@ Django settings for KnustSmartAttendance project.
 """
 
 from pathlib import Path
-import os  # Import os for path handling
+import os
+import dj_database_url  # Needed to connect to Render's public database
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,14 +75,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'KnustSmartAttendance.wsgi.application'
 
 
-# --- DATABASE CONFIGURATION ---
-# Using default SQLite for local development and initial deployment
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# --- DATABASE CONFIGURATION (Production Ready) ---
+
+# Check for a DATABASE_URL environment variable (which Render will provide)
+if 'DATABASE_URL' in os.environ:
+    # Use dj_database_url to configure the public PostgreSQL database
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True
+        )
     }
-}
+else:
+    # Fallback to SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # --- AUTHENTICATION ---
