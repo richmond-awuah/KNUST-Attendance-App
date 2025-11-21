@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Generate Attendance QR Code</h1>
+
+    <p>This generates a time and location-specific QR code for students to scan.</p>
+    
+    <form method="post" action="{% url 'core:generate_qr_code' %}">
+        {% csrf_token %}
+        
+        <label for="course">Select Course:</label>
+        <select name="course_id" id="course" required>
+            {% for course in courses %}
+                <option value="{{ course.pk }}">{{ course.course_code }} - {{ course.name }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label for="duration">Duration (Minutes):</label>
+        <input type="number" name="duration" id="duration" value="10" min="5" required>
+        <br><br>
+
+        <button type="submit">Generate QR & Start Session</button>
+    </form>
+    
+    <p><a href="{% url 'core:index' %}">Back to Dashboard</a></p>
+</body>
+</html>

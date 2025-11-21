@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Attendance Session Active</h1>
+    
+    <p>Session Key: <strong>{{ session_key }}</strong></p>
+    <p>Course: {{ course.name }} ({{ course.course_code }})</p>
+    <p style="color: red;">Attendance closes at: <strong>{{ expires_at|time:"H:i:s" }}</strong></p>
+    <p>Required Location: {{ location }} (Students outside a 50m radius will be flagged)</p>
+
+    <hr>
+
+    <h2>Student Scan Code:</h2>
+    <img src="data:image/png;base64,{{ qr_image }}" alt="Attendance QR Code">
+    
+    <p><a href="{% url 'core:index' %}">Back to Dashboard</a></p>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>View Student Grades</h1>
+
+    <form method="post" action="{% url 'core:view_grades' %}">
+        {% csrf_token %}
+        <label for="course">Select Course:</label>
+        
+        <select name="course_id" id="course" required>
+            <option value="">-- Select a Course --</option>
+            {% for course in courses %}
+                <option value="{{ course.pk }}">{{ course.course_code }} - {{ course.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">View Grades</button>
+    </form>
+
+    {% if student_data %}
+        <hr>
+        <h2>Results for {{ selected_course.name }} ({{ selected_course.course_code }})</h2>
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Index Number</th>
+                    <th>Attendance Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in student_data %}
+                <tr>
+                    <td>{{ data.full_name }}</td>
+                    <td>{{ data.index_number }}</td>
+                    <td>{{ data.attendance_score }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    
+    <p><a href="{% url 'core:index' %}">Back to Dashboard</a></p>
+</body>
+</html>

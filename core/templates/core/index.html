@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>KNUST Lecturer App Dashboard</h1>
+    
+    <p>Routing is successful! Template loaded.</p>
+    <p>Message from View: <strong>{{ message }}</strong></p>
+    
+    ---
+    
+    <h2>Core Actions</h2>
+    <p>
+        <a href="{% url 'core:record_attendance' %}">Go to Attendance Recording Page</a>
+    </p>
+    <p>
+        <a href="{% url 'core:view_grades' %}">View Student Grades / Run Calculation</a>
+    </p>
+    <p>
+        <a href="{% url 'core:generate_qr_code' %}">Generate QR Code & Start Session</a>
+    </p>
+
+</body>
+</html>

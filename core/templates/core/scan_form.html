@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Attendance Check-in ({{ course_code }})</h1>
+    <p>Session expires at: {{ expires_at|time:"H:i:s" }}</p>
+
+    <form method="post" action="{% url 'core:scan_attendance' key=session_key %}">
+        {% csrf_token %}
+        
+        <h2>Enter Your Details</h2>
+
+        <label for="full_name">Full Name (As registered):</label>
+        <input type="text" name="full_name" id="full_name" required>
+        <br><br>
+
+        <label for="index_number">Index Number:</label>
+        <input type="text" name="index_number" id="index_number" required>
+        <br><br>
+        
+        <input type="hidden" name="latitude" id="latitude">
+        <input type="hidden" name="longitude" id="longitude">
+
+        <button type="submit" id="submit_btn">Mark Me Present</button>
+    </form>
+    
+    <script>
+        // --- GEOLOCATION JAVASCRIPT ---
+        const submitBtn = document.getElementById('submit_btn');
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+
+        // Disable button until location is retrieved
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Getting Location...';
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Success: Populate hidden fields and enable button
+                    latitudeInput.value = position.coords.latitude;
+                    longitudeInput.value = position.coords.longitude;
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Mark Me Present';
+                },
+                function(error) {
+                    // Failure: Use null/0 and allow submission, but log the issue
+                    console.error("Geolocation failed:", error);
+                    latitudeInput.value = 0;
+                    longitudeInput.value = 0;
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Mark Me Present (Location Not Found)';
+                }
+            );
+        } else {
+            // Browser does not support Geolocation
+            alert("Geolocation is not supported by your browser. Submission allowed without location.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Mark Me Present';
+        }
+    </script>
+</body>
+</html>
